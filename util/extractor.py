@@ -1,4 +1,5 @@
 """Methods to extract the data for the given usernames profile"""
+import random
 import sys
 from time import sleep, time
 from re import findall
@@ -393,3 +394,94 @@ def extract_information(browser, username, limit_amount):
             last = user_commented_total_list[i]
 
     return userinfo, user_commented_list
+
+
+def extract_user_posts_links(browser, username, limit_amount):
+    InstaLogger.logger().info('Extracting information from ' + username)
+    """Get all the information for the given username"""
+
+    try:
+        user_link = "https://www.instagram.com/{}/".format(username)
+        web_adress_navigator(browser, user_link)
+    except PageNotFound404 as e:
+        raise NoInstaProfilePageFound(e)
+
+    num_of_posts_to_do = 999999
+
+    user_info = {}
+
+    try:
+        user_info = get_user_info(browser, username)
+        if limit_amount < 1:
+            limit_amount = 999999
+        num_of_posts_to_do = min(limit_amount, user_info['num_of_posts'])
+    except Exception as err:
+        InstaLogger.logger().error("Couldn't get user profile. - Terminating")
+        quit()
+
+    """Get all posts from user"""
+    indexed_links = dict()
+    preview_images = {}
+
+    try:
+        body_elem = browser.find_element_by_tag_name('body')
+
+        previouslen = 0
+        breaking = 0
+
+        print("number of posts to do: ", num_of_posts_to_do)
+        num_of_posts_to_scroll = 12 * math.ceil(num_of_posts_to_do / 12)
+        print("Getting first", num_of_posts_to_scroll,
+              "posts but checking ", num_of_posts_to_do,
+              " posts only, if you want to change this limit, change limit_amount value in crawl_profile.py\n")
+        while (len(indexed_links) < num_of_posts_to_do):
+
+            prev_divs = browser.find_elements_by_tag_name('main')
+            links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
+            links = sum([[link_elem.get_attribute('href')
+                          for link_elem in elems] for elems in links_elems], [])
+
+            for elems in links_elems:
+                for link_elem in elems:
+
+                    href = link_elem.get_attribute('href')
+                    try:
+                        if "/p/" in href:
+                            try:
+                                img = link_elem.find_element_by_tag_name('img')
+                                src = img.get_attribute('src')
+                                preview_images[href] = src
+                            except NoSuchElementException:
+                                print("img exception 132")
+                                continue
+                    except Exception as err:
+                        print(err)
+
+            for link in links:
+                if "/p/" in link:
+                    if (len(indexed_links) < num_of_posts_to_do):
+                        if link not in indexed_links:
+                            indexed_links[link] = len(indexed_links)
+            print("Scrolling profile ", len(indexed_links), "/", num_of_posts_to_scroll)
+            body_elem.send_keys(Keys.END)
+            sleep_time = Settings.sleep_time_between_post_scroll
+            sleep(random.uniform(sleep_time - 1, sleep_time + 1))
+
+            ##remove bellow part to never break the scrolling script before reaching the num_of_posts
+            if (len(indexed_links) == previouslen):
+                breaking += 1
+                print("breaking in ", 4 - breaking,
+                      "...\nIf you believe this is only caused by slow internet, increase sleep time 'sleep_time_between_post_scroll' in settings.py")
+            else:
+                breaking = 0
+            if breaking > 3:
+                print("Not getting any more posts, ending scrolling")
+                sleep(2)
+                break
+            previouslen = len(indexed_links)
+            ##
+
+    except NoSuchElementException as err:
+        InstaLogger.logger().error('Something went terribly wrong')
+
+    return user_info, indexed_links, preview_images

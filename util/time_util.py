@@ -1,6 +1,7 @@
 """Helper module to handle time related stuff"""
 from random import gauss
 from time import sleep as original_sleep
+import time
 
 # Amount of variance to be introduced
 # i.e. random time will be in the range: TIME +/- STDEV %
@@ -30,5 +31,10 @@ def sleep(t, custom_percentage=None):
     time = randomize_time(t)*custom_percentage
     original_sleep(time)
 
+
 def sleep_actual(t):
   original_sleep(t)
+
+
+def current_time_mills():
+    return int(round(time.time() * 1000))

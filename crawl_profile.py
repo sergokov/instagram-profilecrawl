@@ -29,7 +29,7 @@ chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US
 
 capabilities = DesiredCapabilities.CHROME
 
-Settings.limit_amount = 1
+Settings.limit_amount = 4
 Settings.scrape_posts_likers = True
 Settings.sleep_time_between_post_scroll = 3.5
 Settings.sleep_time_between_comment_loading = 3.5

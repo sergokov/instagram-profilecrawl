@@ -16,6 +16,7 @@ class Settings:
     scrape_follower = False
     output_comments = False
     sleep_time_between_post_scroll = 1.5
+    sleep_time_between_post_crawl = 60
     sleep_time_between_comment_loading = 1.5
     mentions = True
 
