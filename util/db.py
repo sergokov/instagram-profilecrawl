@@ -6,7 +6,7 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
 
 
 class DatabaseAPI:
-    DB_PATH = 'assets/db'
+    DB_PATH = '/home/sergo/Work/instagram/instagram-profilecrawl/assets/db'
     PROFILE = 'profile'
     POST = 'post'
     LIKER = 'liker'
@@ -62,65 +62,47 @@ class DatabaseAPI:
 
     def insert_profile(self, name, bio, bio_url, alias_name, posts_num, follower, following, is_private):
         query = "INSERT INTO {}(name, bio, bio_url, alias_name, posts_num, follower, following, is_private) " \
-                "VALUES ('{}', '{}', '{}', '{}', {}, {}, {}, {}) ON CONFLICT (name) " \
-                "DO UPDATE SET bio='{}', bio_url='{}', alias_name='{}', posts_num={}, follower={}, " \
-                "following={}, is_private={};"\
-            .format(self.PROFILE, name, bio, bio_url, alias_name, posts_num, follower, following, is_private,
-                    bio, bio_url, alias_name, posts_num, follower, following, is_private)
+                "VALUES ('{}', '{}', '{}', '{}', {}, {}, {}, {});"\
+            .format(self.PROFILE, name, bio, bio_url, alias_name, posts_num, follower, following, is_private)
 
         with self.db_engine.connect() as connection:
             try:
                 connection.execute(query)
-                connection.commit()
-                connection.close()
             except Exception as e:
                 print(e)
 
     def insert_post(self, profile_name, link, index, preview_image_url, image_url, likes, comments):
         query = "INSERT INTO {}(profile_name, link, indx, preview_image_url, image_url, likes, comments, is_crawled) " \
-                "VALUES ('{}', '{}', {}, '{}', '{}', {}, {}, false) ON CONFLICT (link) " \
-                "DO UPDATE SET profile_name='{}', preview_image_url='{}', image_url='{}', likes={}, comments={}, is_crawled=true;"\
-            .format(self.POST, profile_name, link, index, preview_image_url, image_url, likes, comments, profile_name,
-                    preview_image_url, image_url, likes, comments)
+                "VALUES ('{}', '{}', {}, '{}', '{}', {}, {}, 0);"\
+            .format(self.POST, profile_name, link, index, preview_image_url, image_url, likes, comments)
 
         with self.db_engine.connect() as connection:
             try:
                 connection.execute(query)
-                connection.commit()
-                connection.close()
             except Exception as e:
                 print(e)
 
     def insert_liker(self, name, post_link):
-        query = "INSERT INTO {}(name, post_link) VALUES ('{}', '{}') ON CONFLICT (name, post_link) DO NOTHING;"\
-            .format(self.LIKER, name, post_link)
+        query = "INSERT INTO {}(name, post_link) VALUES ('{}', '{}');".format(self.LIKER, name, post_link)
 
         with self.db_engine.connect() as connection:
             try:
                 connection.execute(query)
-                connection.commit()
-                connection.close()
             except Exception as e:
                 print(e)
 
     def insert_commenter(self, name, post_link, comment):
-        query = "INSERT INTO {}(name, post_link, comment) VALUES ('{}', '{}', '{}') " \
-                "ON CONFLICT (name, post_link, comment) DO NOTHING;".format(self.COMMENTER, name, post_link, comment)
+        query = "INSERT INTO {}(name, post_link, comment) VALUES ('{}', '{}', '{}');".format(self.COMMENTER, name, post_link, comment)
 
         with self.db_engine.connect() as connection:
             try:
                 connection.execute(query)
-                connection.commit()
-                connection.close()
             except Exception as e:
                 print(e)
 
-    def load_posts_links(self, profile, posts_number, is_crawled = False):
-        # query = "SELECT link FROM {} WHERE profile_name = '{}' AND is_crawled = {} ORDER BY indx LIMIT {};"\
-        #     .format(self.POST, profile, is_crawled, posts_number)
-
-        query = "SELECT link FROM {} WHERE profile_name = '{}' ORDER BY indx LIMIT {};"\
-            .format(self.POST, profile, posts_number)
+    def load_posts_links(self, profile, posts_number, is_crawled = 0):
+        query = "SELECT link FROM {} WHERE profile_name = '{}' AND is_crawled = {} ORDER BY indx LIMIT {};"\
+            .format(self.POST, profile, is_crawled, posts_number)
 
         results = []
 
@@ -128,21 +110,17 @@ class DatabaseAPI:
             try:
                 results = connection.execute(query).fetchall()
                 results = [row_proxy.items()[0][1] for row_proxy in results]
-                connection.commit()
-                connection.close()
             except Exception as e:
                 print(e)
 
         return results
 
     def update_post(self, link, image_url, likes, comments):
-        query = "UPDATE {} SET image_url='{}', likes={}, comments={}, is_crawled=true WHERE link='{}';"\
+        query = "UPDATE {} SET image_url='{}', likes={}, comments={}, is_crawled=1 WHERE link='{}';"\
             .format(self.POST, image_url, likes, comments, link)
 
         with self.db_engine.connect() as connection:
             try:
                 connection.execute(query)
-                connection.commit()
-                connection.close()
             except Exception as e:
                 print(e)

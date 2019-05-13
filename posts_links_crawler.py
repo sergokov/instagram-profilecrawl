@@ -42,7 +42,7 @@ def main():
                 user_info, indexed_links, preview_images = extract_user_posts_links(browser, user_name, Settings.limit_amount)
                 db = DatabaseAPI()
                 db.insert_profile(user_name, user_info['bio'], user_info['bio_url'], user_info['alias'],
-                                user_info['num_of_posts'], int(user_info['followers']['count']), int(user_info['following']['count']), user_info['isprivate'])
+                                user_info['num_of_posts'], int(user_info['followers']['count']), int(user_info['following']['count']), 1 if user_info['isprivate'] else 0)
                 for link, index in indexed_links.items():
                     db.insert_post(user_name, link, index, preview_images[link], '', 0, 0)
             except Exception as e:
