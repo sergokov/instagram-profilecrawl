@@ -10,7 +10,7 @@ from util.settings import Settings
 
 
 def main():
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         sys.exit('- Please provide number of posts to crawl!\n')
 
     Settings.scrape_posts_likers = True
@@ -18,9 +18,10 @@ def main():
     Settings.sleep_time_between_comment_loading = 3
     Settings.sleep_time_between_post_crawl = 10
 
-    db = DatabaseAPI()
     profile = sys.argv[1]
     posts_to_crawl = sys.argv[2]
+    db_path = sys.argv[3]
+    db = DatabaseAPI(db_path)
     posts_links = db.load_posts_links(profile, posts_to_crawl)
 
     proxies_file = open("assets/proxy.list", "r")
