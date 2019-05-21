@@ -1,6 +1,5 @@
 import sys
 
-from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
 
@@ -11,10 +10,14 @@ from util.settings import Settings
 
 
 def main():
+    if len(sys.argv) < 2:
+        sys.exit('- Please provide profile to crawl and DB path!\n')
+    user_name = sys.argv[1]
+    db_path = sys.argv[2]
+    proxy = sys.argv[3]
+
     chrome_options = Options()
-    chromeOptions = webdriver.ChromeOptions()
-    prefs = {'profile.managed_default_content_settings.images': 2, 'disk-cache-size': 4096}
-    chromeOptions.add_experimental_option("prefs", prefs)
+    chrome_options.add_argument('--proxy-server=%s' % proxy)
     chrome_options.add_argument('--dns-prefetch-disable')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--lang=en-US')
@@ -33,11 +36,6 @@ def main():
         sys.exit()
 
     try:
-        if len(sys.argv) < 2:
-            sys.exit('- Please provide profile to crawl and DB path!\n')
-        user_name = sys.argv[1]
-        db_path = sys.argv[2]
-
         print('Extracting posts links from ' + user_name)
         try:
             user_info, indexed_links, preview_images = extract_user_posts_links(browser, user_name,

@@ -9,7 +9,6 @@ from util.chromedriver import init_chromedriver
 from util.settings import Settings
 from util.time_util import sleep_actual, current_time_mills
 
-#36.66.211.81:39775,138.204.95.189:8080,41.193.238.249:8080,203.99.116.210:8080
 
 class Proxy:
     proxy_ip = None
@@ -37,9 +36,8 @@ class ProxyRotator:
     @staticmethod
     def _create_proxy_browser(proxy_ip=None):
         chrome_options = Options()
-        chromeOptions = webdriver.ChromeOptions()
-        prefs = {'profile.managed_default_content_settings.images': 2, 'disk-cache-size': 4096}
-        chromeOptions.add_experimental_option("prefs", prefs)
+        if proxy_ip is not None:
+            chrome_options.add_argument('--proxy-server=%s' % proxy_ip)
         chrome_options.add_argument('--dns-prefetch-disable')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--lang=en-US')
