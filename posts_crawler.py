@@ -24,7 +24,7 @@ def main():
     db = DatabaseAPI(db_path)
     posts_links = db.load_posts_links(profile, posts_to_crawl)
 
-    with open("assets/proxy.list") as f:
+    with open("proxy.list") as f:
         proxy_list = [x.strip() for x in f.readlines()]
 
     proxy_rotator = ProxyRotator(proxy_list)
