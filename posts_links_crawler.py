@@ -17,7 +17,8 @@ def main():
     proxy = sys.argv[3]
 
     chrome_options = Options()
-    chrome_options.add_argument('--proxy-server=%s' % proxy)
+    if proxy is not None:
+        chrome_options.add_argument('--proxy-server=%s' % proxy)
     chrome_options.add_argument('--dns-prefetch-disable')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--lang=en-US')
