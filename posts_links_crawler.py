@@ -14,7 +14,8 @@ def main():
         sys.exit('- Please provide profile to crawl and DB path!\n')
     user_name = sys.argv[1]
     db_path = sys.argv[2]
-    proxy = sys.argv[3]
+    if len(sys.argv) > 2:
+        proxy = sys.argv[3]
 
     chrome_options = Options()
     if proxy is not None:
