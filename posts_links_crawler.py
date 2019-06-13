@@ -10,11 +10,11 @@ from util.settings import Settings
 
 
 def main():
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         sys.exit('- Please provide profile to crawl and DB path!\n')
     user_name = sys.argv[1]
     db_path = sys.argv[2]
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
         proxy = sys.argv[3]
 
     chrome_options = Options()
