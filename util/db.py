@@ -5,7 +5,7 @@ from os.path import join
 
 class DatabaseAPI:
     def __init__(self, db_folder):
-        self.db_path = join(db_folder, 'db', 'instapy.db')
+        self.db_path = join(db_folder, 'InstaPy', 'db', 'instapy.db')
 
     def insert_profile(self, name, bio, bio_url, alias_name, posts_num, follower, following, is_private):
         query = "INSERT INTO crawled_profile (name, bio, bio_url, alias_name, posts_num, follower, following, is_private) " \
