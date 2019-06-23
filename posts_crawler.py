@@ -38,7 +38,7 @@ def main():
         for liker in post_info['likes']['list']:
             db.insert_liker(liker, post_link)
         for commenter in post_info['comments']['list']:
-            db.insert_commenter(commenter, post_link, commenter)
+            db.insert_commenter(commenter['user'], post_link, commenter['comment'])
 
 
 def _extract_post_info(proxy_browser, post_link):
